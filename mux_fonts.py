@@ -1,6 +1,7 @@
 from pymkv import MKVAttachment
 from pymkv import MKVFile
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 fonts_folder = 'fonts/'
 videos_folder = 'videos/'
@@ -26,12 +27,14 @@ def mux_video_with_fonts(video, fonts):
     for font in fonts:
         add_font_to_mkv(mkv, font)
     mkv.mux(output_folder + video)
+    print('Muxed ' + video)
 
 def mux_all_videos_with_fonts():
     videos = get_file_list(videos_folder, '.mkv')
     fonts = get_file_list(fonts_folder)
+    executor = ThreadPoolExecutor()
     for video in videos:
-        mux_video_with_fonts(video, fonts)
+        executor.submit(mux_video_with_fonts, video, fonts)
 
 if __name__ == "__main__":
     mux_all_videos_with_fonts()
